@@ -13,8 +13,8 @@
         </div>
     </x-slot>
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="p-10 bg-white overflow-hidden shadow-xl sm:rounded-lg">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div class="p-10 bg-white overflow-hidden rounded-lg shadow-sm ring-1 ring-gray-900/5 col-span-2">
                 <div class="flow-root">
                     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -47,6 +47,34 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+                <dl class="flex flex-wrap">
+                    <div class="flex-auto pl-6 pt-6">
+                        <dt class="text-sm font-semibold leading-6 text-gray-900">Total Debt</dt>
+                        <dd class="mt-1 text-base font-semibold leading-6 text-gray-900"><livewire:bill.total-debt /></dd>
+                    </div>
+{{--                    <div class="flex-none self-end px-6 pt-4">--}}
+{{--                        <dt class="sr-only">Status</dt>--}}
+{{--                        <dd class="rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-600 ring-1 ring-inset ring-green-600/20">Paid</dd>--}}
+{{--                    </div>--}}
+
+                    <div class="mt-4 flex w-full flex-none gap-x-4 px-6 py-6 border-t border-gray-900/5">
+                        <div class="w-full">
+                            <h2 class="text-sm font-semibold leading-6 text-gray-900">Upcoming Payments</h2>
+                            <livewire:bill.upcoming-payments />
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex w-full flex-none gap-x-4 px-6 py-6 border-t border-gray-900/5">
+                        <div class="w-full">
+                            <!-- Activity feed -->
+                            <h2 class="text-sm font-semibold leading-6 text-gray-900">Activity</h2>
+                            <livewire:bill.payment-history />
+                        </div>
+                    </div>
+
+                </dl>
             </div>
         </div>
     </div>

@@ -19,7 +19,7 @@
                                 <div class="grid grid-cols-2 gap-5">
                                     <div>
                                         <x-label for="amount" value="{{ __('Payment Amount') }}" />
-                                        <x-input id="amount" type="number" class="mt-1 block w-full shadow-none" wire:model="amount" required autocomplete="amount" />
+                                        <x-input id="amount" type="text" class="mt-1 block w-full shadow-none" wire:model="amount" required autocomplete="amount" />
                                         <x-input-error for="amount" class="mt-2" />
                                     </div>
                                     <div>

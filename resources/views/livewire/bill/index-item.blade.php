@@ -6,6 +6,6 @@
     <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ $bill->rate }}%</td>
     <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ $bill->type }}</td>
     <td class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-        <a wire:navigate href="{{ route('bill.show', $bill) }}" class="text-indigo-600 hover:text-indigo-900">View<span class="sr-only">, {{ $bill->name }}</span></a>
+        <a wire:navigate href="{{ route('bill.show', $bill) }}" class="text-emerald-600 hover:text-emerald-900">View<span class="sr-only">, {{ $bill->name }}</span></a>
     </td>
 </tr>

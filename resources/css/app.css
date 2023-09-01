@@ -5,3 +5,5 @@
 [x-cloak] {
     display: none;
 }
+
+.activity li:last-child .bar { display: none; }

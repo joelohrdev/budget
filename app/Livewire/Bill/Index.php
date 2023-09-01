@@ -10,7 +10,10 @@ class Index extends Component
     public function render()
     {
         return view('livewire.bill.index', [
-            'bills' => Bill::latest()->get(),
+            'bills' => Bill::query()
+                ->orderBy('balance')
+                ->orderBy('rate')
+                ->get(),
         ]);
     }
 }
