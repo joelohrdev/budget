@@ -17,7 +17,7 @@ class TotalDebt extends Component
     {
         return <<<'HTML'
         <div>
-           ${{ $total }}
+           ${{ number_format($total, 2) }}
         </div>
         HTML;
     }
