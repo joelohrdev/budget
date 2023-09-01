@@ -1,7 +1,7 @@
 <tr>
     <td class="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ $bill->name }}</td>
     <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ $bill->due_date->format('M d, Y') }}</td>
-    <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">${{ number_format($balance, 2) }}</td>
+    <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">${{ number_format($bill->balance, 2) }}</td>
     <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">${{ number_format($bill->limit, 2) }}</td>
     <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">{{ $bill->rate }}%</td>
     <td class="whitespace-nowrap px-2 py-2 text-sm text-gray-500">

@@ -16,9 +16,14 @@ class Create extends Component
 
     public function create()
     {
+        $this->bill->update([
+            'balance' => $this->bill->balance - $this->amount,
+        ]);
+
         $this->bill->payments()->create([
             'amount' => $this->amount,
             'date' => $this->date,
+            'balance' => $this->bill->balance
         ]);
 
         session()->flash('message', 'Bill successfully created.');

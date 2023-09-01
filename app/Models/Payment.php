@@ -10,6 +10,7 @@ class Payment extends Model
     protected $fillable = [
         'bill_id',
         'amount',
+        'balance',
         'date',
     ];
 

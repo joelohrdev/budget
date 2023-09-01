@@ -12,7 +12,7 @@ class Show extends Component
 
     public function mount()
     {
-        $this->percentage = 100 - ($this->bill->balance / $this->bill->limit * 100);
+        $this->percentage = $this->bill->balance / $this->bill->limit * 100;
     }
 
     public function render()

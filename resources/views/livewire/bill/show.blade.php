@@ -20,9 +20,9 @@
                         </div>
                     </dl>
                     <div class="p-6">
-                        <div class="flex h-2 overflow-hidden rounded bg-gray-100">
+                        <div class="flex h-2 overflow-hidden rounded bg-green-600">
                             <div style="transform: scale({{ $percentage / 100 }}, 1)"
-                                 class="@if($percentage >= 70) bg-green-500 @elseif($percentage >= 40) bg-orange-500 @else bg-red-500 @endif transition-transform origin-left duration-200 ease-in-out w-full shadow-none flex flex-col"></div>
+                                 class="bg-red-500 transition-transform origin-left duration-200 ease-in-out w-full shadow-none flex flex-col"></div>
                         </div>
                     </div>
                 </div>
