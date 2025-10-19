@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
+        ->middleware('registration.enabled')
         ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('registration.enabled')
         ->name('register.store');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
