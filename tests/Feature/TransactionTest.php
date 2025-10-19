@@ -84,6 +84,67 @@ test('user cannot delete another users transaction', function () {
         ->assertForbidden();
 });
 
+test('user can update their transaction', function () {
+    $user = User::factory()->create();
+    $payPeriod = PayPeriod::factory()->create(['user_id' => $user->id]);
+    $card = Card::factory()->create([
+        'user_id' => $user->id,
+        'pay_period_id' => $payPeriod->id,
+    ]);
+
+    $transaction = $card->transactions()->create([
+        'description' => 'Original Description',
+        'amount' => 50.00,
+        'type' => 'debit',
+        'transaction_date' => now(),
+    ]);
+
+    actingAs($user)
+        ->put(route('transactions.update', $transaction), [
+            'card_id' => $card->id,
+            'description' => 'Updated Description',
+            'amount' => 75.00,
+            'type' => 'credit',
+            'transaction_date' => now()->format('Y-m-d'),
+        ])
+        ->assertRedirect(route('pay-periods.index'));
+
+    $transaction->refresh();
+    expect($transaction->description)->toBe('Updated Description');
+    expect((float) $transaction->amount)->toBe(75.00);
+    expect($transaction->type)->toBe('credit');
+});
+
+test('user cannot update another users transaction', function () {
+    $user1 = User::factory()->create();
+    $user2 = User::factory()->create();
+    $payPeriod = PayPeriod::factory()->create(['user_id' => $user1->id]);
+    $card = Card::factory()->create([
+        'user_id' => $user1->id,
+        'pay_period_id' => $payPeriod->id,
+    ]);
+
+    $transaction = $card->transactions()->create([
+        'description' => 'Original Description',
+        'amount' => 50.00,
+        'type' => 'debit',
+        'transaction_date' => now(),
+    ]);
+
+    actingAs($user2)
+        ->put(route('transactions.update', $transaction), [
+            'card_id' => $card->id,
+            'description' => 'Hacked Description',
+            'amount' => 999.00,
+            'type' => 'debit',
+            'transaction_date' => now()->format('Y-m-d'),
+        ])
+        ->assertForbidden();
+
+    $transaction->refresh();
+    expect($transaction->description)->toBe('Original Description');
+});
+
 test('transaction requires valid data', function () {
     $user = User::factory()->create();
     $payPeriod = PayPeriod::factory()->create(['user_id' => $user->id]);

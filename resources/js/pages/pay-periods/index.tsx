@@ -1,4 +1,5 @@
 import AddTransactionDialog from '@/components/add-transaction-dialog';
+import EditTransactionDialog from '@/components/edit-transaction-dialog';
 import Heading from '@/components/heading';
 import { Button } from '@/components/ui/button';
 import {
@@ -71,13 +72,6 @@ export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
     const [selectedCategory, setSelectedCategory] = useState<number | null>(
         null,
     );
-
-    console.log('PayPeriodsIndex Data:', {
-        payPeriodsCount: payPeriods.length,
-        categoriesCount: categories.length,
-        payPeriods,
-        categories
-    });
 
     const activePayPeriod = payPeriods.find((pp) => pp.is_active);
     const activeCards =
@@ -408,6 +402,28 @@ export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
                                                                                     transaction.amount,
                                                                                 )}
                                                                             </span>
+                                                                            <EditTransactionDialog
+                                                                                transaction={
+                                                                                    transaction
+                                                                                }
+                                                                                cardId={
+                                                                                    card.id
+                                                                                }
+                                                                                cards={
+                                                                                    payPeriod.cards.map(
+                                                                                        (
+                                                                                            c,
+                                                                                        ) => ({
+                                                                                            id: c.id,
+                                                                                            name: c.name,
+                                                                                            type: c.type,
+                                                                                        }),
+                                                                                    )
+                                                                                }
+                                                                                categories={
+                                                                                    categories
+                                                                                }
+                                                                            />
                                                                             <button
                                                                                 onClick={() => {
                                                                                     if (
