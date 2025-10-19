@@ -166,3 +166,92 @@ test('user cannot update another users pay period', function () {
         ])
         ->assertForbidden();
 });
+
+test('pay periods index displays transactions for debit and credit cards', function () {
+    $user = User::factory()->create();
+    $payPeriod = PayPeriod::factory()->create([
+        'user_id' => $user->id,
+        'is_active' => true,
+    ]);
+
+    $debitCard = Card::factory()->create([
+        'user_id' => $user->id,
+        'pay_period_id' => $payPeriod->id,
+        'type' => 'debit',
+        'name' => 'Debit Card',
+        'budget_limit' => 1000.00,
+    ]);
+
+    $creditCard = Card::factory()->create([
+        'user_id' => $user->id,
+        'pay_period_id' => $payPeriod->id,
+        'type' => 'credit',
+        'name' => 'Credit Card',
+        'budget_limit' => 500.00,
+    ]);
+
+    $debitTransaction = $debitCard->transactions()->create([
+        'description' => 'Grocery Store',
+        'amount' => 50.00,
+        'type' => 'debit',
+        'transaction_date' => now(),
+    ]);
+
+    $creditTransaction = $creditCard->transactions()->create([
+        'description' => 'Gas Station',
+        'amount' => 30.00,
+        'type' => 'debit',
+        'transaction_date' => now(),
+    ]);
+
+    $response = actingAs($user)
+        ->get(route('pay-periods.index'))
+        ->assertSuccessful();
+
+    $response->assertInertia(fn ($page) => $page
+        ->component('pay-periods/index')
+        ->has('payPeriods', 1)
+        ->has('payPeriods.0.cards', 2)
+        ->has('payPeriods.0.cards.0.transactions', 1)
+        ->has('payPeriods.0.cards.1.transactions', 1)
+    );
+
+    // Verify transactions are present (order may vary)
+    $responseData = $response->viewData('page')['props'];
+    $allTransactionDescriptions = collect($responseData['payPeriods'][0]['cards'])
+        ->flatMap(fn ($card) => collect($card['transactions'])->pluck('description'))
+        ->toArray();
+
+    expect($allTransactionDescriptions)->toContain('Grocery Store');
+    expect($allTransactionDescriptions)->toContain('Gas Station');
+});
+
+test('pay periods index has categories prop for transaction dialog', function () {
+    $user = User::factory()->create();
+
+    $category = $user->categories()->create([
+        'name' => 'Groceries',
+        'color' => '#10b981',
+    ]);
+
+    $payPeriod = PayPeriod::factory()->create([
+        'user_id' => $user->id,
+        'is_active' => true,
+    ]);
+
+    Card::factory()->create([
+        'user_id' => $user->id,
+        'pay_period_id' => $payPeriod->id,
+        'type' => 'debit',
+    ]);
+
+    $response = actingAs($user)
+        ->get(route('pay-periods.index'))
+        ->assertSuccessful();
+
+    $response->assertInertia(fn ($page) => $page
+        ->component('pay-periods/index')
+        ->has('categories', 1)
+        ->where('categories.0.name', 'Groceries')
+    );
+});

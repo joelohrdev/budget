@@ -72,6 +72,13 @@ export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
         null,
     );
 
+    console.log('PayPeriodsIndex Data:', {
+        payPeriodsCount: payPeriods.length,
+        categoriesCount: categories.length,
+        payPeriods,
+        categories
+    });
+
     const activePayPeriod = payPeriods.find((pp) => pp.is_active);
     const activeCards =
         activePayPeriod?.cards.map((card) => ({

@@ -17,9 +17,9 @@ class PayPeriodsController extends Controller
         $user = auth()->user();
 
         $payPeriods = $user->payPeriods()
-            ->with(['cards.transactions.category' => function ($query) {
+            ->with(['cards.transactions' => function ($query) {
                 $query->orderBy('transaction_date', 'desc');
-            }])
+            }, 'cards.transactions.category'])
             ->orderBy('start_date', 'desc')
             ->get()
             ->map(function ($payPeriod) {
