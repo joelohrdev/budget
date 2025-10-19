@@ -19,6 +19,7 @@ import {
     PlusIcon,
     TrashIcon,
 } from 'lucide-react';
+import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -27,12 +28,19 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
 ];
 
+type Category = {
+    id: number;
+    name: string;
+    color: string | null;
+};
+
 type TransactionData = {
     id: number;
     description: string;
     amount: number;
     type: 'debit' | 'credit';
     transaction_date: string;
+    category: Category | null;
 };
 
 type CardData = {
@@ -56,9 +64,14 @@ type PayPeriodData = {
 
 type Props = {
     payPeriods: PayPeriodData[];
+    categories: Category[];
 };
 
-export default function PayPeriodsIndex({ payPeriods }: Props) {
+export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
+    const [selectedCategory, setSelectedCategory] = useState<number | null>(
+        null,
+    );
+
     const activePayPeriod = payPeriods.find((pp) => pp.is_active);
     const activeCards =
         activePayPeriod?.cards.map((card) => ({
@@ -114,7 +127,10 @@ export default function PayPeriodsIndex({ payPeriods }: Props) {
                     />
                     <div className="flex flex-wrap gap-2">
                         {activeCards.length > 0 && (
-                            <AddTransactionDialog cards={activeCards} />
+                            <AddTransactionDialog
+                                cards={activeCards}
+                                categories={categories}
+                            />
                         )}
                         <Link href={create().url}>
                             <Button className="w-full sm:w-auto">
@@ -124,6 +140,48 @@ export default function PayPeriodsIndex({ payPeriods }: Props) {
                         </Link>
                     </div>
                 </div>
+
+                {categories.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-medium">
+                            Filter by category:
+                        </span>
+                        <Button
+                            variant={
+                                selectedCategory === null
+                                    ? 'default'
+                                    : 'outline'
+                            }
+                            size="sm"
+                            onClick={() => setSelectedCategory(null)}
+                        >
+                            All
+                        </Button>
+                        {categories.map((category) => (
+                            <Button
+                                key={category.id}
+                                variant={
+                                    selectedCategory === category.id
+                                        ? 'default'
+                                        : 'outline'
+                                }
+                                size="sm"
+                                onClick={() => setSelectedCategory(category.id)}
+                                style={
+                                    selectedCategory === category.id &&
+                                    category.color
+                                        ? {
+                                              backgroundColor: category.color,
+                                              borderColor: category.color,
+                                          }
+                                        : {}
+                                }
+                            >
+                                {category.name}
+                            </Button>
+                        ))}
+                    </div>
+                )}
 
                 {payPeriods.length === 0 && (
                     <Card>
@@ -263,10 +321,30 @@ export default function PayPeriodsIndex({ payPeriods }: Props) {
                                                             Transactions
                                                         </h4>
                                                         <div className="space-y-1">
-                                                            {card.transactions.map(
-                                                                (
-                                                                    transaction,
-                                                                ) => (
+                                                            {card.transactions
+                                                                .filter(
+                                                                    (
+                                                                        transaction,
+                                                                    ) => {
+                                                                        if (
+                                                                            selectedCategory ===
+                                                                            null
+                                                                        ) {
+                                                                            return true;
+                                                                        }
+
+                                                                        return (
+                                                                            transaction
+                                                                                .category
+                                                                                ?.id ===
+                                                                            selectedCategory
+                                                                        );
+                                                                    },
+                                                                )
+                                                                .map(
+                                                                    (
+                                                                        transaction,
+                                                                    ) => (
                                                                     <div
                                                                         key={
                                                                             transaction.id
@@ -274,10 +352,31 @@ export default function PayPeriodsIndex({ payPeriods }: Props) {
                                                                         className="flex items-start justify-between gap-2 rounded border p-2 text-xs"
                                                                     >
                                                                         <div className="min-w-0 flex-1 space-y-0.5">
-                                                                            <div className="truncate font-medium">
-                                                                                {
-                                                                                    transaction.description
-                                                                                }
+                                                                            <div className="flex items-center gap-2">
+                                                                                <div className="truncate font-medium">
+                                                                                    {
+                                                                                        transaction.description
+                                                                                    }
+                                                                                </div>
+                                                                                {transaction.category && (
+                                                                                    <span
+                                                                                        className="inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                                                                                        style={{
+                                                                                            backgroundColor:
+                                                                                                transaction
+                                                                                                    .category
+                                                                                                    .color ||
+                                                                                                '#6b7280',
+                                                                                            color: 'white',
+                                                                                        }}
+                                                                                    >
+                                                                                        {
+                                                                                            transaction
+                                                                                                .category
+                                                                                                .name
+                                                                                        }
+                                                                                    </span>
+                                                                                )}
                                                                             </div>
                                                                             <div className="text-muted-foreground">
                                                                                 {formatDate(

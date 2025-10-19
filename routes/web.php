@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\PayPeriodsController;
 use App\Http\Controllers\TransactionsController;
 use Illuminate\Support\Facades\Route;
@@ -38,8 +39,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ];
         }
 
+        $categories = $user->categories()->orderBy('name')->get()->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'color' => $category->color,
+            ];
+        });
+
         return Inertia::render('dashboard', [
             'activePayPeriod' => $dashboardData,
+            'categories' => $categories,
         ]);
     })->name('dashboard');
 
@@ -51,6 +61,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('transactions', [TransactionsController::class, 'store'])->name('transactions.store');
     Route::delete('transactions/{transaction}', [TransactionsController::class, 'destroy'])->name('transactions.destroy');
+
+    Route::post('categories', [CategoriesController::class, 'store'])->name('categories.store');
 });
 
 require __DIR__.'/settings.php';

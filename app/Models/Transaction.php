@@ -13,6 +13,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'card_id',
+        'category_id',
         'description',
         'amount',
         'type',
@@ -30,5 +31,10 @@ class Transaction extends Model
     public function card(): BelongsTo
     {
         return $this->belongsTo(Card::class);
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 }

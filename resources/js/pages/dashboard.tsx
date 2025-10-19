@@ -38,6 +38,12 @@ type CardData = {
     remaining_budget: number;
 };
 
+type Category = {
+    id: number;
+    name: string;
+    color: string | null;
+};
+
 type ActivePayPeriod = {
     start_date: string;
     end_date: string;
@@ -46,9 +52,10 @@ type ActivePayPeriod = {
 
 type Props = {
     activePayPeriod: ActivePayPeriod | null;
+    categories: Category[];
 };
 
-export default function Dashboard({ activePayPeriod }: Props) {
+export default function Dashboard({ activePayPeriod, categories }: Props) {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -116,7 +123,10 @@ export default function Dashboard({ activePayPeriod }: Props) {
                         description="Overview of your current pay period"
                     />
                     {activeCards.length > 0 && (
-                        <AddTransactionDialog cards={activeCards} />
+                        <AddTransactionDialog
+                            cards={activeCards}
+                            categories={categories}
+                        />
                     )}
                 </div>
 

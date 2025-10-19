@@ -17,7 +17,7 @@ class PayPeriodsController extends Controller
         $user = auth()->user();
 
         $payPeriods = $user->payPeriods()
-            ->with(['cards.transactions' => function ($query) {
+            ->with(['cards.transactions.category' => function ($query) {
                 $query->orderBy('transaction_date', 'desc');
             }])
             ->orderBy('start_date', 'desc')
@@ -44,6 +44,11 @@ class PayPeriodsController extends Controller
                                     'amount' => (float) $transaction->amount,
                                     'type' => $transaction->type,
                                     'transaction_date' => $transaction->transaction_date->format('Y-m-d'),
+                                    'category' => $transaction->category ? [
+                                        'id' => $transaction->category->id,
+                                        'name' => $transaction->category->name,
+                                        'color' => $transaction->category->color,
+                                    ] : null,
                                 ];
                             }),
                         ];
@@ -51,8 +56,17 @@ class PayPeriodsController extends Controller
                 ];
             });
 
+        $categories = $user->categories()->orderBy('name')->get()->map(function ($category) {
+            return [
+                'id' => $category->id,
+                'name' => $category->name,
+                'color' => $category->color,
+            ];
+        });
+
         return Inertia::render('pay-periods/index', [
             'payPeriods' => $payPeriods,
+            'categories' => $categories,
         ]);
     }
 

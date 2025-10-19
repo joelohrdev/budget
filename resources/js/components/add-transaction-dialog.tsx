@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Form } from '@inertiajs/react';
+import { Form, router } from '@inertiajs/react';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 
@@ -22,17 +22,69 @@ type Card = {
     type: string;
 };
 
-type Props = {
-    cards: Card[];
+type Category = {
+    id: number;
+    name: string;
+    color: string | null;
 };
 
-export default function AddTransactionDialog({ cards }: Props) {
+type Props = {
+    cards: Card[];
+    categories?: Category[];
+};
+
+export default function AddTransactionDialog({ cards, categories = [] }: Props) {
     const [open, setOpen] = useState(false);
+    const [showNewCategory, setShowNewCategory] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [creatingCategory, setCreatingCategory] = useState(false);
 
     const today = new Date().toISOString().split('T')[0];
 
+    const handleCreateCategory = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!newCategoryName.trim()) {
+            return;
+        }
+
+        setCreatingCategory(true);
+
+        router.post(
+            '/categories',
+            {
+                name: newCategoryName,
+                color: '#6b7280',
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                only: ['categories'],
+                onSuccess: () => {
+                    setNewCategoryName('');
+                    setShowNewCategory(false);
+                },
+                onError: (errors) => {
+                    console.error('Failed to create category:', errors);
+                },
+                onFinish: () => {
+                    setCreatingCategory(false);
+                },
+            },
+        );
+    };
+
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+            open={open}
+            onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (!isOpen) {
+                    setShowNewCategory(false);
+                    setNewCategoryName('');
+                }
+            }}
+        >
             <DialogTrigger asChild>
                 <Button>
                     <PlusIcon className="size-4" />
@@ -72,6 +124,75 @@ export default function AddTransactionDialog({ cards }: Props) {
                                     ))}
                                 </select>
                                 <InputError message={errors.card_id} />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="category_id">Category</Label>
+                                {showNewCategory ? (
+                                    <div className="flex gap-2">
+                                        <Input
+                                            value={newCategoryName}
+                                            onChange={(e) =>
+                                                setNewCategoryName(
+                                                    e.target.value,
+                                                )
+                                            }
+                                            placeholder="New category name"
+                                            disabled={creatingCategory}
+                                        />
+                                        <Button
+                                            type="button"
+                                            onClick={(e) => handleCreateCategory(e)}
+                                            disabled={
+                                                creatingCategory ||
+                                                !newCategoryName.trim()
+                                            }
+                                        >
+                                            Save
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => {
+                                                setShowNewCategory(false);
+                                                setNewCategoryName('');
+                                            }}
+                                            disabled={creatingCategory}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <div className="flex gap-2">
+                                        <select
+                                            id="category_id"
+                                            name="category_id"
+                                            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                        >
+                                            <option value="">
+                                                No category
+                                            </option>
+                                            {categories.map((category) => (
+                                                <option
+                                                    key={category.id}
+                                                    value={category.id}
+                                                >
+                                                    {category.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() =>
+                                                setShowNewCategory(true)
+                                            }
+                                        >
+                                            <PlusIcon className="size-4" />
+                                        </Button>
+                                    </div>
+                                )}
+                                <InputError message={errors.category_id} />
                             </div>
 
                             <div className="grid gap-2">

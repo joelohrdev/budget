@@ -23,6 +23,7 @@ class StoreTransactionRequest extends FormRequest
     {
         return [
             'card_id' => ['required', 'exists:cards,id'],
+            'category_id' => ['nullable', 'exists:categories,id'],
             'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
             'type' => ['required', 'in:debit,credit'],
@@ -35,6 +36,7 @@ class StoreTransactionRequest extends FormRequest
         return [
             'card_id.required' => 'The card is required.',
             'card_id.exists' => 'The selected card is invalid.',
+            'category_id.exists' => 'The selected category is invalid.',
             'description.required' => 'The description is required.',
             'description.max' => 'The description must not exceed 255 characters.',
             'amount.required' => 'The amount is required.',
