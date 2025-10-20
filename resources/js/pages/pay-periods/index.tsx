@@ -350,11 +350,11 @@ export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
                                                                         key={
                                                                             transaction.id
                                                                         }
-                                                                        className="flex items-start justify-between gap-2 rounded border p-2 text-xs"
+                                                                        className="flex flex-col gap-2 rounded border p-2 text-xs sm:flex-row sm:items-start sm:justify-between"
                                                                     >
                                                                         <div className="min-w-0 flex-1 space-y-0.5">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <div className="truncate font-medium">
+                                                                            <div className="flex flex-wrap items-center gap-1.5">
+                                                                                <div className="break-words font-medium">
                                                                                     {
                                                                                         transaction.description
                                                                                     }
@@ -385,7 +385,7 @@ export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
                                                                                 )}
                                                                             </div>
                                                                         </div>
-                                                                        <div className="flex shrink-0 items-center gap-2">
+                                                                        <div className="flex shrink-0 items-center justify-between gap-2 sm:justify-start">
                                                                             <span
                                                                                 className={
                                                                                     transaction.type ===
@@ -402,45 +402,47 @@ export default function PayPeriodsIndex({ payPeriods, categories }: Props) {
                                                                                     transaction.amount,
                                                                                 )}
                                                                             </span>
-                                                                            <EditTransactionDialog
-                                                                                transaction={
-                                                                                    transaction
-                                                                                }
-                                                                                cardId={
-                                                                                    card.id
-                                                                                }
-                                                                                cards={
-                                                                                    payPeriod.cards.map(
-                                                                                        (
-                                                                                            c,
-                                                                                        ) => ({
-                                                                                            id: c.id,
-                                                                                            name: c.name,
-                                                                                            type: c.type,
-                                                                                        }),
-                                                                                    )
-                                                                                }
-                                                                                categories={
-                                                                                    categories
-                                                                                }
-                                                                            />
-                                                                            <button
-                                                                                onClick={() => {
-                                                                                    if (
-                                                                                        confirm(
-                                                                                            'Are you sure you want to delete this transaction?',
-                                                                                        )
-                                                                                    ) {
-                                                                                        router.delete(
-                                                                                            `/transactions/${transaction.id}`,
-                                                                                        );
+                                                                            <div className="flex items-center gap-2">
+                                                                                <EditTransactionDialog
+                                                                                    transaction={
+                                                                                        transaction
                                                                                     }
-                                                                                }}
-                                                                                className="text-muted-foreground transition-colors hover:text-red-600"
-                                                                                aria-label="Delete transaction"
-                                                                            >
-                                                                                <TrashIcon className="size-3.5" />
-                                                                            </button>
+                                                                                    cardId={
+                                                                                        card.id
+                                                                                    }
+                                                                                    cards={
+                                                                                        payPeriod.cards.map(
+                                                                                            (
+                                                                                                c,
+                                                                                            ) => ({
+                                                                                                id: c.id,
+                                                                                                name: c.name,
+                                                                                                type: c.type,
+                                                                                            }),
+                                                                                        )
+                                                                                    }
+                                                                                    categories={
+                                                                                        categories
+                                                                                    }
+                                                                                />
+                                                                                <button
+                                                                                    onClick={() => {
+                                                                                        if (
+                                                                                            confirm(
+                                                                                                'Are you sure you want to delete this transaction?',
+                                                                                            )
+                                                                                        ) {
+                                                                                            router.delete(
+                                                                                                `/transactions/${transaction.id}`,
+                                                                                            );
+                                                                                        }
+                                                                                    }}
+                                                                                    className="text-muted-foreground transition-colors hover:text-red-600"
+                                                                                    aria-label="Delete transaction"
+                                                                                >
+                                                                                    <TrashIcon className="size-3.5" />
+                                                                                </button>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 ),
