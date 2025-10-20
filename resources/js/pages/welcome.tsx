@@ -12,8 +12,8 @@ export default function Welcome() {
                 />
             </Head>
 
-            <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
-                <div className="text-center">
+            <div className="flex min-h-screen w-full items-center justify-center overflow-x-hidden bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-gray-900 dark:to-gray-800">
+                <div className="w-full max-w-md px-4 text-center">
                     <Link
                         href={login.url()}
                         className="inline-block transition-transform hover:scale-105"
