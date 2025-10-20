@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BillsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DashboardController;
@@ -14,6 +15,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('analytics', [AnalyticsController::class, 'index'])->name('analytics');
 
     Route::get('pay-periods', [PayPeriodsController::class, 'index'])->name('pay-periods.index');
     Route::get('pay-periods/create', [PayPeriodsController::class, 'create'])->name('pay-periods.create');

@@ -10,12 +10,12 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { analytics, dashboard } from '@/routes';
 import { index as billsIndex } from '@/routes/bills';
 import { index as payPeriodsIndex } from '@/routes/pay-periods';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Calendar, DollarSign, Folder, LayoutGrid } from 'lucide-react';
+import { BarChart3, BookOpen, Calendar, DollarSign, Folder, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -23,6 +23,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Analytics',
+        href: analytics(),
+        icon: BarChart3,
     },
     {
         title: 'Pay Periods',
