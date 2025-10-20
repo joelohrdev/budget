@@ -12,15 +12,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Check if due_day column exists (production database)
-        if (Schema::hasColumn('bills', 'due_day')) {
-            // Add the new due_date column as nullable first
-            Schema::table('bills', function (Blueprint $table) {
-                $table->date('due_date')->nullable()->after('amount');
-            });
+        // Check if we need to migrate from due_day to due_date
+        $hasDueDay = Schema::hasColumn('bills', 'due_day');
+        $hasDueDate = Schema::hasColumn('bills', 'due_date');
+
+        if ($hasDueDay) {
+            // Add the new due_date column if it doesn't exist
+            if (! $hasDueDate) {
+                Schema::table('bills', function (Blueprint $table) {
+                    $table->date('due_date')->nullable()->after('amount');
+                });
+            }
 
             // Convert existing due_day values to due_date
-            // Get all bills and update them individually
+            // Get all bills that need conversion
             $bills = DB::table('bills')->whereNull('due_date')->get();
 
             foreach ($bills as $bill) {
@@ -58,19 +63,38 @@ return new class extends Migration
             $driver = DB::connection()->getDriverName();
 
             if ($driver === 'sqlite') {
-                Schema::table('bills', function (Blueprint $table) {
-                    $table->dropIndex(['user_id', 'due_day']);
-                });
+                // Check if the index exists before trying to drop it
+                $indexes = DB::select("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='bills' AND name='bills_user_id_due_day_index'");
+                if (count($indexes) > 0) {
+                    Schema::table('bills', function (Blueprint $table) {
+                        $table->dropIndex(['user_id', 'due_day']);
+                    });
+                }
             }
 
             Schema::table('bills', function (Blueprint $table) {
                 $table->dropColumn('due_day');
             });
+        }
 
-            // Add the new index
-            Schema::table('bills', function (Blueprint $table) {
-                $table->index(['user_id', 'due_date']);
-            });
+        // Add the new index if it doesn't exist
+        if ($hasDueDate || $hasDueDay) {
+            $driver = DB::connection()->getDriverName();
+            $hasIndex = false;
+
+            if ($driver === 'mysql') {
+                $indexes = DB::select("SHOW INDEX FROM bills WHERE Key_name = 'bills_user_id_due_date_index'");
+                $hasIndex = count($indexes) > 0;
+            } elseif ($driver === 'sqlite') {
+                $indexes = DB::select("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='bills' AND name='bills_user_id_due_date_index'");
+                $hasIndex = count($indexes) > 0;
+            }
+
+            if (! $hasIndex) {
+                Schema::table('bills', function (Blueprint $table) {
+                    $table->index(['user_id', 'due_date']);
+                });
+            }
         }
     }
 
