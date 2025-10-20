@@ -10,6 +10,21 @@ class AnalyticsService
     public function __construct(protected User $user) {}
 
     /**
+     * Get the date format SQL for extracting year-month based on database driver
+     */
+    protected function getMonthFormatSql(string $column): string
+    {
+        $driver = DB::connection()->getDriverName();
+
+        return match ($driver) {
+            'mysql' => "DATE_FORMAT({$column}, '%Y-%m')",
+            'pgsql' => "TO_CHAR({$column}, 'YYYY-MM')",
+            'sqlite' => "strftime('%Y-%m', {$column})",
+            default => "DATE_FORMAT({$column}, '%Y-%m')",
+        };
+    }
+
+    /**
      * Get category spending breakdown for a date range
      */
     public function getCategorySpending(?string $startDate = null, ?string $endDate = null): array
@@ -53,6 +68,8 @@ class AnalyticsService
      */
     public function getSpendingTrends(int $months = 6): array
     {
+        $monthFormat = $this->getMonthFormatSql('transaction_date');
+
         $results = DB::table('transactions')
             ->join('cards', 'transactions.card_id', '=', 'cards.id')
             ->leftJoin('categories', 'transactions.category_id', '=', 'categories.id')
@@ -60,7 +77,7 @@ class AnalyticsService
             ->where('transactions.type', 'debit')
             ->where('transactions.transaction_date', '>=', now()->subMonths($months)->startOfMonth())
             ->select(
-                DB::raw('strftime("%Y-%m", transaction_date) as month'),
+                DB::raw("{$monthFormat} as month"),
                 'categories.name as category_name',
                 DB::raw('SUM(transactions.amount) as total')
             )
@@ -140,19 +157,20 @@ class AnalyticsService
     {
         $currentMonth = now()->format('Y-m');
         $previousMonth = now()->subMonth()->format('Y-m');
+        $monthFormat = $this->getMonthFormatSql('transaction_date');
 
         $currentMonthSpending = DB::table('transactions')
             ->join('cards', 'transactions.card_id', '=', 'cards.id')
             ->where('cards.user_id', $this->user->id)
             ->where('transactions.type', 'debit')
-            ->where(DB::raw('strftime("%Y-%m", transaction_date)'), $currentMonth)
+            ->where(DB::raw($monthFormat), $currentMonth)
             ->sum('transactions.amount');
 
         $previousMonthSpending = DB::table('transactions')
             ->join('cards', 'transactions.card_id', '=', 'cards.id')
             ->where('cards.user_id', $this->user->id)
             ->where('transactions.type', 'debit')
-            ->where(DB::raw('strftime("%Y-%m", transaction_date)'), $previousMonth)
+            ->where(DB::raw($monthFormat), $previousMonth)
             ->sum('transactions.amount');
 
         $difference = (float) $currentMonthSpending - (float) $previousMonthSpending;
