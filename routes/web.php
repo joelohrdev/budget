@@ -4,6 +4,9 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BillsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DebtCalculatorController;
+use App\Http\Controllers\DebtPaymentsController;
+use App\Http\Controllers\DebtsController;
 use App\Http\Controllers\PayPeriodsController;
 use App\Http\Controllers\TransactionsController;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +36,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('bills', [BillsController::class, 'store'])->name('bills.store');
     Route::put('bills/{bill}', [BillsController::class, 'update'])->name('bills.update');
     Route::delete('bills/{bill}', [BillsController::class, 'destroy'])->name('bills.destroy');
+
+    Route::get('debts', [DebtsController::class, 'index'])->name('debts.index');
+    Route::get('debts/{debt}', [DebtsController::class, 'show'])->name('debts.show');
+    Route::post('debts', [DebtsController::class, 'store'])->name('debts.store');
+    Route::put('debts/{debt}', [DebtsController::class, 'update'])->name('debts.update');
+    Route::delete('debts/{debt}', [DebtsController::class, 'destroy'])->name('debts.destroy');
+
+    Route::post('debts/{debt}/payments', [DebtPaymentsController::class, 'store'])->name('debts.payments.store');
+    Route::delete('debts/{debt}/payments/{payment}', [DebtPaymentsController::class, 'destroy'])->name('debts.payments.destroy');
+
+    Route::get('debt-calculator', [DebtCalculatorController::class, 'index'])->name('debt-calculator.index');
+    Route::post('debts/{debt}/payoff-schedule', [DebtCalculatorController::class, 'payoffSchedule'])->name('debts.payoff-schedule');
+    Route::post('debt-calculator/snowball', [DebtCalculatorController::class, 'snowballAnalysis'])->name('debt-calculator.snowball');
+    Route::post('debt-calculator/avalanche', [DebtCalculatorController::class, 'avalancheAnalysis'])->name('debt-calculator.avalanche');
 });
 
 require __DIR__.'/settings.php';

@@ -24,12 +24,12 @@ Core Budget Features
 
 Analytics & Insights
 
-5. Spending Analytics
-- Category spending trends over time
-- Compare actual vs budgeted amounts
-- Month-over-month spending changes
-- Top spending categories
-- Average transaction amounts by category
+5. ~~Spending Analytics~~
+- ~~Category spending trends over time~~
+- ~~Compare actual vs budgeted amounts~~
+- ~~Month-over-month spending changes~~
+- ~~Top spending categories~~
+- ~~Average transaction amounts by category~~
 
 6. Reports & Visualizations
 - Spending breakdown pie charts
