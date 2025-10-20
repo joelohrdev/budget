@@ -54,8 +54,16 @@ return new class extends Migration
             });
 
             // Drop the old index and column
+            // For SQLite: need to drop index first, for MySQL: dropColumn handles it
+            $driver = DB::connection()->getDriverName();
+
+            if ($driver === 'sqlite') {
+                Schema::table('bills', function (Blueprint $table) {
+                    $table->dropIndex(['user_id', 'due_day']);
+                });
+            }
+
             Schema::table('bills', function (Blueprint $table) {
-                $table->dropIndex(['user_id', 'due_day']);
                 $table->dropColumn('due_day');
             });
 
@@ -86,8 +94,15 @@ return new class extends Migration
             });
 
             // Drop the new index and column
+            $driver = DB::connection()->getDriverName();
+
+            if ($driver === 'sqlite') {
+                Schema::table('bills', function (Blueprint $table) {
+                    $table->dropIndex(['user_id', 'due_date']);
+                });
+            }
+
             Schema::table('bills', function (Blueprint $table) {
-                $table->dropIndex(['user_id', 'due_date']);
                 $table->dropColumn('due_date');
             });
 
