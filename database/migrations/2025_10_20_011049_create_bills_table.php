@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->decimal('amount', 10, 2);
-            $table->date('due_date');
+            $table->integer('due_day'); // Day of month (1-31)
             $table->timestamps();
 
-            $table->index(['user_id', 'due_date']);
+            $table->index(['user_id', 'due_day']);
         });
     }
 
