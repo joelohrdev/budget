@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BillsController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PayPeriodsController;
@@ -25,6 +26,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('transactions/{transaction}', [TransactionsController::class, 'destroy'])->name('transactions.destroy');
 
     Route::post('categories', [CategoriesController::class, 'store'])->name('categories.store');
+
+    Route::get('bills', [BillsController::class, 'index'])->name('bills.index');
+    Route::post('bills', [BillsController::class, 'store'])->name('bills.store');
+    Route::put('bills/{bill}', [BillsController::class, 'update'])->name('bills.update');
+    Route::delete('bills/{bill}', [BillsController::class, 'destroy'])->name('bills.destroy');
 });
 
 require __DIR__.'/settings.php';

@@ -11,10 +11,11 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
+import { index as billsIndex } from '@/routes/bills';
 import { index as payPeriodsIndex } from '@/routes/pay-periods';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, Calendar, Folder, LayoutGrid } from 'lucide-react';
+import { BookOpen, Calendar, DollarSign, Folder, LayoutGrid } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -27,6 +28,11 @@ const mainNavItems: NavItem[] = [
         title: 'Pay Periods',
         href: payPeriodsIndex(),
         icon: Calendar,
+    },
+    {
+        title: 'Bills',
+        href: billsIndex(),
+        icon: DollarSign,
     },
 ];
 

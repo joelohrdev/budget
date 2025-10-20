@@ -18,6 +18,8 @@ class DashboardController extends Controller
             ->first();
 
         $dashboardData = null;
+        $billsDue = [];
+
         if ($activePayPeriod) {
             $dashboardData = [
                 'start_date' => $activePayPeriod->start_date->format('Y-m-d'),
@@ -34,6 +36,21 @@ class DashboardController extends Controller
                     ];
                 }),
             ];
+
+            // Get bills due in the current pay period
+            $billsDue = $user->bills()
+                ->whereBetween('due_date', [$activePayPeriod->start_date, $activePayPeriod->end_date])
+                ->orderBy('due_date')
+                ->get()
+                ->map(function ($bill) {
+                    return [
+                        'id' => $bill->id,
+                        'name' => $bill->name,
+                        'amount' => (float) $bill->amount,
+                        'due_date' => $bill->due_date->format('Y-m-d'),
+                    ];
+                })
+                ->toArray();
         }
 
         $categories = $user->categories()->orderBy('name')->get()->map(function ($category) {
@@ -46,6 +63,7 @@ class DashboardController extends Controller
 
         return Inertia::render('dashboard', [
             'activePayPeriod' => $dashboardData,
+            'billsDue' => $billsDue,
             'categories' => $categories,
         ]);
     }

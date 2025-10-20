@@ -16,6 +16,7 @@ import { Head, Link } from '@inertiajs/react';
 import {
     CalendarIcon,
     CreditCardIcon,
+    DollarSignIcon,
     PlusIcon,
     TrendingDownIcon,
     TrendingUpIcon,
@@ -44,6 +45,13 @@ type Category = {
     color: string | null;
 };
 
+type Bill = {
+    id: number;
+    name: string;
+    amount: number;
+    due_date: string;
+};
+
 type ActivePayPeriod = {
     start_date: string;
     end_date: string;
@@ -52,10 +60,11 @@ type ActivePayPeriod = {
 
 type Props = {
     activePayPeriod: ActivePayPeriod | null;
+    billsDue: Bill[];
     categories: Category[];
 };
 
-export default function Dashboard({ activePayPeriod, categories }: Props) {
+export default function Dashboard({ activePayPeriod, billsDue, categories }: Props) {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -90,6 +99,7 @@ export default function Dashboard({ activePayPeriod, categories }: Props) {
 
         return 'bg-green-500';
     };
+
 
     const activeCards =
         activePayPeriod?.cards.map((card) => ({
@@ -205,6 +215,42 @@ export default function Dashboard({ activePayPeriod, categories }: Props) {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        {billsDue.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <DollarSignIcon className="size-5" />
+                                        Bills Due This Pay Period
+                                    </CardTitle>
+                                    <CardDescription>
+                                        {billsDue.length} {billsDue.length === 1 ? 'bill' : 'bills'} due between {formatDate(activePayPeriod.start_date)} and {formatDate(activePayPeriod.end_date)}
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                        {billsDue.map((bill) => (
+                                            <div
+                                                key={bill.id}
+                                                className="rounded-lg border p-3"
+                                            >
+                                                <div className="mb-2 font-medium">
+                                                    {bill.name}
+                                                </div>
+                                                <div className="flex items-baseline justify-between">
+                                                    <span className="text-2xl font-bold">
+                                                        {formatCurrency(bill.amount)}
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {formatDate(bill.due_date)}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
 
                         <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2">
                             {activePayPeriod.cards.map((card) => {
